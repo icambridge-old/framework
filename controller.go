@@ -1,9 +1,7 @@
 package framework
 
 import (
-	"fmt"
 	"net/http"
-	"html/template"
 )
 
 type Controller struct {
