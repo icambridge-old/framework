@@ -5,12 +5,12 @@ import (
 )
 
 type App struct {
-	controllers  map[string]reflect.Type
+	controllers map[string]reflect.Type
 
 	router Router
 }
 
-func (a *App) RegisterController(c interface {}) {
+func (a *App) RegisterController(c interface{}) {
 	t := reflect.TypeOf(c)
 	a.controllers[t.Name()] = t
 }

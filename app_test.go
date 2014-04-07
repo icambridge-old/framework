@@ -1,8 +1,8 @@
 package framework
 
 import (
-	"testing"
 	"reflect"
+	"testing"
 )
 
 func TestApp_RegisterController(t *testing.T) {
@@ -36,7 +36,7 @@ func TestApp_RegisterRouter(t *testing.T) {
 	a := NewApp()
 	a.RegisterRouter(r)
 
-	if !reflect.DeepEqual(r,a.router) {
+	if !reflect.DeepEqual(r, a.router) {
 		t.Errorf("Router didn't match, expected %v got %v", r, a.router)
 	}
 }

@@ -5,9 +5,7 @@ import (
 )
 
 type Controller struct {
-
 	request *http.Request
 
 	response http.ResponseWriter
-
 }
