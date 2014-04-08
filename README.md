@@ -1,7 +1,7 @@
 framework
 =========
 
-A simple web framework in Golang. A major work in progress.
+A simple web framework in Golang. A major work in progress. I have no idea what I want or what I'll end up with.
 
 ### If you're wanting to use a web framework in go
 
