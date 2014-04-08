@@ -40,3 +40,46 @@ func TestApp_RegisterRouter(t *testing.T) {
 		t.Errorf("Router didn't match, expected %v got %v", r, a.router)
 	}
 }
+
+
+func TestApp_getControllerAndAction_TwoPartsGiven(t *testing.T) {
+	a := NewApp()
+	controller, action := a.getControllerAndAction("/home/index")
+	expectedController,expectedAction  := "Home", "Index"
+
+	if controller != expectedController {
+		t.Errorf("Expected %v got %v", expectedController, controller)
+	}
+
+	if action != expectedAction {
+		t.Errorf("Expected %v got %v", expectedAction, action)
+	}
+}
+
+func TestApp_getControllerAndAction_OnePartsGiven(t *testing.T) {
+	a := NewApp()
+	controller, action := a.getControllerAndAction("/home")
+	expectedController,expectedAction  := "Home", "Index"
+
+	if controller != expectedController {
+		t.Errorf("Expected %v got %v", expectedController, controller)
+	}
+
+	if action != expectedAction {
+		t.Errorf("Expected %v got %v", expectedAction, action)
+	}
+}
+
+func TestApp_getControllerAndAction_ZeroPartsGiven(t *testing.T) {
+	a := NewApp()
+	controller, action := a.getControllerAndAction("/")
+	expectedController,expectedAction  := "Home", "Index"
+
+	if controller != expectedController {
+		t.Errorf("Expected %v got %v", expectedController, controller)
+	}
+
+	if action != expectedAction {
+		t.Errorf("Expected %v got %v", expectedAction, action)
+	}
+}

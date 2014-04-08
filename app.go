@@ -2,6 +2,8 @@ package framework
 
 import (
 	"reflect"
+	"strings"
+	"unicode"
 )
 
 type App struct {
@@ -15,6 +17,25 @@ func (a *App) RegisterController(c interface{}) {
 	a.controllers[t.Name()] = t
 }
 
+func (a *App) getControllerAndAction(URI string) (string, string) {
+
+	defaultController := "Home"
+	defaultAction := "Index"
+
+	URI = strings.Trim(URI, "/")
+	parts := strings.Split(URI, "/")
+
+	partsLen := len(parts)
+
+	if partsLen >= 2 {
+		return ucfirst(parts[0]), ucfirst(parts[1])
+	} else if partsLen == 1 && parts[0] != "" {
+		return ucfirst(parts[0]), defaultAction
+	}
+
+	return defaultController, defaultAction
+}
+
 func (a *App) RegisterRouter(r Router) {
 	a.router = r
 }
@@ -22,4 +43,11 @@ func (a *App) RegisterRouter(r Router) {
 func NewApp() *App {
 
 	return &App{controllers: map[string]reflect.Type{}}
+}
+
+func ucfirst(s string) string {
+	a := []rune(s)
+	a[0] = unicode.ToUpper(a[0])
+	s = string(a)
+	return s
 }
