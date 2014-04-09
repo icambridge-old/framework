@@ -41,11 +41,10 @@ func TestApp_RegisterRouter(t *testing.T) {
 	}
 }
 
-
 func TestApp_getControllerAndAction_TwoPartsGiven(t *testing.T) {
 	a := NewApp()
 	controller, action := a.getControllerAndAction("/home/index")
-	expectedController,expectedAction  := "Home", "Index"
+	expectedController, expectedAction := "Home", "Index"
 
 	if controller != expectedController {
 		t.Errorf("Expected %v got %v", expectedController, controller)
@@ -59,7 +58,7 @@ func TestApp_getControllerAndAction_TwoPartsGiven(t *testing.T) {
 func TestApp_getControllerAndAction_OnePartsGiven(t *testing.T) {
 	a := NewApp()
 	controller, action := a.getControllerAndAction("/home")
-	expectedController,expectedAction  := "Home", "Index"
+	expectedController, expectedAction := "Home", "Index"
 
 	if controller != expectedController {
 		t.Errorf("Expected %v got %v", expectedController, controller)
@@ -73,7 +72,7 @@ func TestApp_getControllerAndAction_OnePartsGiven(t *testing.T) {
 func TestApp_getControllerAndAction_ZeroPartsGiven(t *testing.T) {
 	a := NewApp()
 	controller, action := a.getControllerAndAction("/")
-	expectedController,expectedAction  := "Home", "Index"
+	expectedController, expectedAction := "Home", "Index"
 
 	if controller != expectedController {
 		t.Errorf("Expected %v got %v", expectedController, controller)

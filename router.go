@@ -1,9 +1,9 @@
 package framework
 
 import (
+	"encoding/xml"
 	"io"
 	"io/ioutil"
-	"encoding/xml"
 	"strings"
 )
 
@@ -39,7 +39,7 @@ type Routes struct {
 
 type Route struct {
 	Controller string `xml:"controller"`
-	Action string     `xml:"action"`
-	Path string       `xml:"path"`
-	Id string		  `xml:"id"`
+	Action     string `xml:"action"`
+	Path       string `xml:"path"`
+	Id         string `xml:"id"`
 }

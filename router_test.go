@@ -2,8 +2,8 @@ package framework
 
 import (
 	"reflect"
-	"testing"
 	"strings"
+	"testing"
 )
 
 func TestRouter_ParseXml(t *testing.T) {
@@ -26,7 +26,7 @@ func TestRouter_ParseXml(t *testing.T) {
 
 	routesLen := len(r.Routes)
 
-	if  routesLen != 1 {
+	if routesLen != 1 {
 		t.Errorf("Expected len 1 instead got %v", routesLen)
 	}
 
@@ -37,7 +37,6 @@ func TestRouter_ParseXml(t *testing.T) {
 	}
 
 	expectedRoute := Route{Id: "home_index", Controller: "Home", Action: "Index", Path: "/"}
-
 
 	if !reflect.DeepEqual(expectedRoute, route) {
 		t.Errorf("Expected %v, got %v", expectedRoute, route)
