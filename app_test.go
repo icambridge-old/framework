@@ -20,6 +20,20 @@ func TestApp_RegisterController(t *testing.T) {
 
 }
 
+func TestApp_hasController(t *testing.T) {
+
+	type TestController struct {
+		Controller
+	}
+
+	a := NewApp()
+	a.RegisterController(TestController{})
+
+	if a.hasController("TestController") == false {
+		t.Error("Expected TestController to be registered it wasn't")
+	}
+}
+
 func TestNewApp(t *testing.T) {
 
 	a := NewApp()

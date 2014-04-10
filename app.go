@@ -36,6 +36,13 @@ func (a *App) getControllerAndAction(URI string) (string, string) {
 	return defaultController, defaultAction
 }
 
+func (a *App) hasController(controller string) bool {
+
+	_, ok := a.controllers[controller]
+
+	return ok
+}
+
 func (a *App) RegisterRouter(r Router) {
 	a.router = r
 }
