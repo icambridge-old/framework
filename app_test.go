@@ -7,24 +7,29 @@ import (
 
 func TestApp_RegisterController(t *testing.T) {
 
-	type TestController struct {
-		Controller
-	}
-
 	a := NewApp()
-	a.RegisterController(TestController{})
+	c := TestController{}
+	a.RegisterController(c)
 
-	if _, ok := a.controllers["TestController"]; ok == false {
+	actual, ok := a.controllers["TestController"];
+
+	if ok == false {
 		t.Error("Expected TestController to be registered it wasn't")
 	}
 
+	expected := ControllerInfo{
+		Name: "TestController",
+		Type: reflect.TypeOf(c),
+		Actions: []string{"Test"},
+	}
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Errorf("Expected %v got %v", expected, actual)
+	}
 }
 
 func TestApp_hasController(t *testing.T) {
 
-	type TestController struct {
-		Controller
-	}
 
 	a := NewApp()
 	a.RegisterController(TestController{})
@@ -95,4 +100,12 @@ func TestApp_getControllerAndAction_ZeroPartsGiven(t *testing.T) {
 	if action != expectedAction {
 		t.Errorf("Expected %v got %v", expectedAction, action)
 	}
+}
+
+type TestController struct {
+	Controller
+}
+
+func (c TestController) Test() bool {
+	return true
 }

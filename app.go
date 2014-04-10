@@ -7,14 +7,34 @@ import (
 )
 
 type App struct {
-	controllers map[string]reflect.Type
+	controllers map[string]ControllerInfo
 
 	router Router
 }
 
+type ControllerInfo struct {
+	Name string
+	Actions []string
+	Type reflect.Type
+}
+
 func (a *App) RegisterController(c interface{}) {
 	t := reflect.TypeOf(c)
-	a.controllers[t.Name()] = t
+
+	ci := ControllerInfo{}
+	ci.Name = t.Name()
+	ci.Type = t
+
+	count := t.NumMethod()
+
+	ms := []string{}
+	for i := 0; i < count; i++ {
+		m := t.Method(i)
+		ms = append(ms, m.Name)
+	}
+	ci.Actions = ms
+
+	a.controllers[t.Name()] = ci
 }
 
 func (a *App) getControllerAndAction(URI string) (string, string) {
@@ -49,7 +69,7 @@ func (a *App) RegisterRouter(r Router) {
 
 func NewApp() *App {
 
-	return &App{controllers: map[string]reflect.Type{}}
+	return &App{controllers: map[string]ControllerInfo{}}
 }
 
 func ucfirst(s string) string {
