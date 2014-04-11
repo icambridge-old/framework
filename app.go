@@ -13,9 +13,9 @@ type App struct {
 }
 
 type ControllerInfo struct {
-	Name string
+	Name    string
 	Actions []string
-	Type reflect.Type
+	Type    reflect.Type
 }
 
 func (a *App) RegisterController(c interface{}) {
@@ -24,17 +24,23 @@ func (a *App) RegisterController(c interface{}) {
 	ci := ControllerInfo{}
 	ci.Name = t.Name()
 	ci.Type = t
-
-	count := t.NumMethod()
-
-	ms := []string{}
-	for i := 0; i < count; i++ {
-		m := t.Method(i)
-		ms = append(ms, m.Name)
-	}
-	ci.Actions = ms
+	ci.Actions = getMethodNames(t)
+	// Move to seperate function
 
 	a.controllers[t.Name()] = ci
+}
+
+func getMethodNames(reflectedType reflect.Type) []string {
+
+	count := reflectedType.NumMethod()
+	methods := []string{}
+
+	for i := 0; i < count; i++ {
+		method := reflectedType.Method(i)
+		methods = append(methods, method.Name)
+	}
+
+	return methods
 }
 
 func (a *App) getControllerAndAction(URI string) (string, string) {
