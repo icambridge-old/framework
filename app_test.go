@@ -17,10 +17,19 @@ func TestApp_RegisterController(t *testing.T) {
 		t.Error("Expected TestController to be registered it wasn't")
 	}
 
-	expected := ControllerInfo{
+	rt := reflect.TypeOf(c)
+	method := rt.Method(0)
+	actions := map[string]MethodInfo{
+		method.Name:MethodInfo{
+			Name: method.Name,
+			Type: method,
+		},
+	}
+
+	expected := StructInfo{
 		Name:    "TestController",
-		Type:    reflect.TypeOf(c),
-		Actions: []string{"Test"},
+		Type:    rt,
+		Actions: actions,
 	}
 
 	if !reflect.DeepEqual(expected, actual) {
@@ -40,11 +49,11 @@ func TestApp_hasController(t *testing.T) {
 	}
 }
 
-func Test_getMethodNames_OneMethod(t *testing.T) {
+func Test_getMethods_OneMethod(t *testing.T) {
 
 	testType := reflect.TypeOf(TestController{})
 
-	methods := getMethodNames(testType)
+	methods := getMethods(testType)
 
 	expectedLen, actualLen := 1, len(methods)
 
@@ -53,9 +62,10 @@ func Test_getMethodNames_OneMethod(t *testing.T) {
 		return
 	}
 
-	expectedMethod, actualMethod := "Test", methods[0]
+	expectedMethod := "Test"
+	actualMethod, ok := methods[expectedMethod]
 
-	if expectedMethod != actualMethod {
+	if ok != true {
 		t.Errorf("Expected a method of %v but got %v", expectedMethod, actualMethod)
 		return
 	}
@@ -63,11 +73,11 @@ func Test_getMethodNames_OneMethod(t *testing.T) {
 
 
 
-func Test_getMethodNames_TwoMethods(t *testing.T) {
+func Test_getMethods_TwoMethods(t *testing.T) {
 
 	testType := reflect.TypeOf(SecondTest{})
 
-	methods := getMethodNames(testType)
+	methods := getMethods(testType)
 
 	expectedLen, actualLen := 2, len(methods)
 
@@ -76,15 +86,19 @@ func Test_getMethodNames_TwoMethods(t *testing.T) {
 		return
 	}
 
-	expectedMethod, actualMethod := "TestOne", methods[0]
 
-	if expectedMethod != actualMethod {
+	expectedMethod := "TestOne"
+	actualMethod, ok := methods[expectedMethod]
+
+	if ok != true {
 		t.Errorf("Expected a method of %v but got %v", expectedMethod, actualMethod)
 		return
 	}
-	expectedMethod, actualMethod = "TestTwo", methods[1]
 
-	if expectedMethod != actualMethod {
+	expectedMethod = "TestTwo"
+	actualMethod, ok = methods[expectedMethod]
+
+	if ok != true {
 		t.Errorf("Expected a method of %v but got %v", expectedMethod, actualMethod)
 		return
 	}

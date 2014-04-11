@@ -7,37 +7,44 @@ import (
 )
 
 type App struct {
-	controllers map[string]ControllerInfo
+	controllers map[string]StructInfo
 
 	router Router
 }
 
-type ControllerInfo struct {
+type StructInfo struct {
 	Name    string
-	Actions []string
+	Actions map[string]MethodInfo
 	Type    reflect.Type
+}
+
+type MethodInfo struct {
+	Name    string
+	Type    reflect.Method
 }
 
 func (a *App) RegisterController(c interface{}) {
 	t := reflect.TypeOf(c)
 
-	ci := ControllerInfo{}
+	ci := StructInfo{}
 	ci.Name = t.Name()
 	ci.Type = t
-	ci.Actions = getMethodNames(t)
-	// Move to seperate function
+	ci.Actions = getMethods(t)
 
 	a.controllers[t.Name()] = ci
 }
 
-func getMethodNames(reflectedType reflect.Type) []string {
+func getMethods(reflectedType reflect.Type) map[string]MethodInfo {
 
 	count := reflectedType.NumMethod()
-	methods := []string{}
+	methods := map[string]MethodInfo{}
 
 	for i := 0; i < count; i++ {
 		method := reflectedType.Method(i)
-		methods = append(methods, method.Name)
+		methods[method.Name] = MethodInfo{
+			Name: method.Name,
+			Type: method,
+		}
 	}
 
 	return methods
@@ -75,7 +82,7 @@ func (a *App) RegisterRouter(r Router) {
 
 func NewApp() *App {
 
-	return &App{controllers: map[string]ControllerInfo{}}
+	return &App{controllers: map[string]StructInfo{}}
 }
 
 func ucfirst(s string) string {
