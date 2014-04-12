@@ -3,7 +3,6 @@ package framework
 import (
 	"reflect"
 	"strings"
-	"unicode"
 )
 
 type App struct {
@@ -61,9 +60,9 @@ func (a *App) getControllerAndAction(URI string) (string, string) {
 	partsLen := len(parts)
 
 	if partsLen >= 2 {
-		return ucfirst(parts[0]), ucfirst(parts[1])
+		return UpperFirst(parts[0]), UpperFirst(parts[1])
 	} else if partsLen == 1 && parts[0] != "" {
-		return ucfirst(parts[0]), defaultAction
+		return UpperFirst(parts[0]), defaultAction
 	}
 
 	return defaultController, defaultAction
@@ -85,9 +84,3 @@ func NewApp() *App {
 	return &App{controllers: map[string]StructInfo{}}
 }
 
-func ucfirst(s string) string {
-	a := []rune(s)
-	a[0] = unicode.ToUpper(a[0])
-	s = string(a)
-	return s
-}
