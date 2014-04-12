@@ -1,86 +1,31 @@
 package framework
 
 import (
-	"reflect"
-	"strings"
+	"fmt"
+	"net/http"
 )
 
 type App struct {
-	controllers map[string]StructInfo
-
+	// The port the application is to run on
+	port int
+	// Maybe remove? Or move code from here to it?
 	router Router
-}
-
-type StructInfo struct {
-	Name    string
-	Actions map[string]MethodInfo
-	Type    reflect.Type
-}
-
-type MethodInfo struct {
-	Name    string
-	Type    reflect.Method
-}
-
-func (a *App) RegisterController(c interface{}) {
-	t := reflect.TypeOf(c)
-
-	ci := StructInfo{}
-	ci.Name = t.Name()
-	ci.Type = t
-	ci.Actions = getMethods(t)
-
-	a.controllers[t.Name()] = ci
-}
-
-func getMethods(reflectedType reflect.Type) map[string]MethodInfo {
-
-	count := reflectedType.NumMethod()
-	methods := map[string]MethodInfo{}
-
-	for i := 0; i < count; i++ {
-		method := reflectedType.Method(i)
-		methods[method.Name] = MethodInfo{
-			Name: method.Name,
-			Type: method,
-		}
-	}
-
-	return methods
-}
-
-func (a *App) getControllerAndAction(URI string) (string, string) {
-
-	defaultController := "Home"
-	defaultAction := "Index"
-
-	URI = strings.Trim(URI, "/")
-	parts := strings.Split(URI, "/")
-
-	partsLen := len(parts)
-
-	if partsLen >= 2 {
-		return UpperFirst(parts[0]), UpperFirst(parts[1])
-	} else if partsLen == 1 && parts[0] != "" {
-		return UpperFirst(parts[0]), defaultAction
-	}
-
-	return defaultController, defaultAction
-}
-
-func (a *App) hasController(controller string) bool {
-
-	_, ok := a.controllers[controller]
-
-	return ok
+	//
+	mux *http.ServeMux
 }
 
 func (a *App) RegisterRouter(r Router) {
 	a.router = r
 }
 
-func NewApp() *App {
+// TODO figure out how to test this...
+func (a *App) Start() {
 
-	return &App{controllers: map[string]StructInfo{}}
+	dsn := fmt.Sprintf(":%d", a.port)
+
+	http.ListenAndServe(dsn, a.mux)
 }
 
+func NewApp(port int) *App {
+	return &App{port: port}
+}

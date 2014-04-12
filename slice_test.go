@@ -14,7 +14,6 @@ func Test_SliceHasString_DoesHaveString(t *testing.T) {
 	}
 }
 
-
 func Test_SliceHasString_DoesHaveString_WithOthers(t *testing.T) {
 
 	findString := "find me"
@@ -24,7 +23,6 @@ func Test_SliceHasString_DoesHaveString_WithOthers(t *testing.T) {
 		t.Errorf("Expectedt to find %v, but didn't.", findString)
 	}
 }
-
 
 func Test_SliceHasString_DoesntHaveString(t *testing.T) {
 

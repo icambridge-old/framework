@@ -1,45 +1,47 @@
 package framework
 
 import (
-	"encoding/xml"
-	"io"
-	"io/ioutil"
+	"reflect"
 	"strings"
 )
 
+func NewRouter() *Router {
+	return &Router{controllers: map[string]StructInfo{}}
+}
+
 type Router struct {
-	Routes map[string]Route
+	// Contains the controllers that are registered for the application
+	controllers map[string]StructInfo
 }
 
-func (r *Router) ParseXml(src io.Reader) error {
-	b, err := ioutil.ReadAll(src)
-	if err != nil {
-		return err
-	}
-
-	routes := Routes{}
-	err = xml.Unmarshal(b, &routes)
-
-	if err != nil {
-		return err
-	}
-
-	r.Routes = map[string]Route{}
-	for _, route := range routes.Routes {
-		key := strings.ToLower(route.Path)
-		r.Routes[key] = route
-	}
-
-	return nil
+func (r *Router) RegisterController(c interface{}) {
+	reflected := reflect.TypeOf(c)
+	structInfo := getStructInfo(reflected)
+	r.controllers[reflected.Name()] = structInfo
 }
 
-type Routes struct {
-	Routes []Route `xml:"route"`
+func (a *Router) getControllerAndAction(URI string) (string, string) {
+
+	defaultController := "Home"
+	defaultAction := "Index"
+
+	URI = strings.Trim(URI, "/")
+	parts := strings.Split(URI, "/")
+
+	partsLen := len(parts)
+
+	if partsLen >= 2 {
+		return UpperFirst(parts[0]), UpperFirst(parts[1])
+	} else if partsLen == 1 && parts[0] != "" {
+		return UpperFirst(parts[0]), defaultAction
+	}
+
+	return defaultController, defaultAction
 }
 
-type Route struct {
-	Controller string `xml:"controller"`
-	Action     string `xml:"action"`
-	Path       string `xml:"path"`
-	Id         string `xml:"id"`
+func (a *Router) hasController(controller string) bool {
+
+	_, ok := a.controllers[controller]
+
+	return ok
 }

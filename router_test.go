@@ -2,43 +2,110 @@ package framework
 
 import (
 	"reflect"
-	"strings"
 	"testing"
 )
 
-func TestRouter_ParseXml(t *testing.T) {
+func TestRouter_hasController(t *testing.T) {
+	// Todo build setUp and tearDown
+	router := NewRouter()
+	router.RegisterController(TestController{})
 
-	xml := `<routes>
-		<route>
-			<id>home_index</id>
-			<controller>Home</controller>
-			<action>Index</action>
-			<path>/</path>
-		</route>
-	</routes>`
+	if router.hasController("TestController") == false {
+		t.Error("Expected TestController to be registered it wasn't")
+	}
+}
 
-	r := Router{}
-	err := r.ParseXml(strings.NewReader(xml))
+func TestRouter_RegisterController(t *testing.T) {
 
-	if err != nil {
-		t.Errorf("Didn't expect an error but got %v", err)
+	a := NewRouter()
+	c := TestController{}
+	a.RegisterController(c)
+
+	actual, ok := a.controllers["TestController"]
+
+	if ok == false {
+		t.Error("Expected TestController to be registered it wasn't")
 	}
 
-	routesLen := len(r.Routes)
-
-	if routesLen != 1 {
-		t.Errorf("Expected len 1 instead got %v", routesLen)
+	rt := reflect.TypeOf(c)
+	method := rt.Method(0)
+	actions := map[string]MethodInfo{
+		method.Name: MethodInfo{
+			Name: method.Name,
+			Type: method,
+		},
 	}
 
-	path := "/"
-	route, ok := r.Routes[path]
-	if ok != true {
-		t.Errorf("Expected true for key '%v' existing got %v", path, ok)
+	expected := StructInfo{
+		Name:    "TestController",
+		Type:    rt,
+		Methods: actions,
 	}
 
-	expectedRoute := Route{Id: "home_index", Controller: "Home", Action: "Index", Path: "/"}
-
-	if !reflect.DeepEqual(expectedRoute, route) {
-		t.Errorf("Expected %v, got %v", expectedRoute, route)
+	if !reflect.DeepEqual(expected, actual) {
+		t.Errorf("Expected %v got %v", expected, actual)
 	}
+}
+
+func TestRouter_getControllerAndAction_TwoPartsGiven(t *testing.T) {
+	router := NewRouter()
+	controller, action := router.getControllerAndAction("/home/index")
+	expectedController, expectedAction := "Home", "Index"
+
+	if controller != expectedController {
+		t.Errorf("Expected %v got %v", expectedController, controller)
+	}
+
+	if action != expectedAction {
+		t.Errorf("Expected %v got %v", expectedAction, action)
+	}
+}
+
+func TestRouter_getControllerAndAction_OnePartsGiven(t *testing.T) {
+	router := NewRouter()
+	controller, action := router.getControllerAndAction("/home")
+	expectedController, expectedAction := "Home", "Index"
+
+	if controller != expectedController {
+		t.Errorf("Expected %v got %v", expectedController, controller)
+	}
+
+	if action != expectedAction {
+		t.Errorf("Expected %v got %v", expectedAction, action)
+	}
+}
+
+func TestRouter_getControllerAndAction_ZeroPartsGiven(t *testing.T) {
+
+	router := NewRouter()
+	controller, action := router.getControllerAndAction("/")
+	expectedController, expectedAction := "Home", "Index"
+
+	if controller != expectedController {
+		t.Errorf("Expected %v got %v", expectedController, controller)
+	}
+
+	if action != expectedAction {
+		t.Errorf("Expected %v got %v", expectedAction, action)
+	}
+}
+
+type TestController struct {
+	Controller
+}
+
+func (c TestController) Test() bool {
+	return true
+}
+
+type SecondTest struct {
+	Controller
+}
+
+func (c SecondTest) TestOne() bool {
+	return true
+}
+
+func (c SecondTest) TestTwo() bool {
+	return true
 }
