@@ -1,16 +1,15 @@
 package framework
 
 import (
-	"reflect"
 	"testing"
 )
 
-func TestRouter_hasController(t *testing.T) {
+func TestRouter_hasRoute(t *testing.T) {
 	// Todo build setUp and tearDown
 	router := NewRouter()
 	router.RegisterController(TestController{})
 
-	if router.hasController("TestController") == false {
+	if router.hasRoute("TestController", "Test") == false {
 		t.Error("Expected TestController to be registered it wasn't")
 	}
 }
@@ -21,30 +20,12 @@ func TestRouter_RegisterController(t *testing.T) {
 	c := TestController{}
 	a.RegisterController(c)
 
-	actual, ok := a.controllers["TestController"]
+	_, ok := a.controllers["TestController"]
 
 	if ok == false {
 		t.Error("Expected TestController to be registered it wasn't")
 	}
 
-	rt := reflect.TypeOf(c)
-	method := rt.Method(0)
-	actions := map[string]MethodInfo{
-		method.Name: MethodInfo{
-			Name: method.Name,
-			Type: method,
-		},
-	}
-
-	expected := StructInfo{
-		Name:    "TestController",
-		Type:    rt,
-		Methods: actions,
-	}
-
-	if !reflect.DeepEqual(expected, actual) {
-		t.Errorf("Expected %v got %v", expected, actual)
-	}
 }
 
 func TestRouter_getControllerAndAction_TwoPartsGiven(t *testing.T) {

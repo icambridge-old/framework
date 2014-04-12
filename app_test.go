@@ -7,7 +7,7 @@ import (
 
 func TestApp_RegisterRouter(t *testing.T) {
 
-	r := Router{}
+	r := &Router{}
 
 	a := NewApp(1)
 	a.RegisterRouter(r)

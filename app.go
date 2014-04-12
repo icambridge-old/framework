@@ -9,12 +9,10 @@ type App struct {
 	// The port the application is to run on
 	port int
 	// Maybe remove? Or move code from here to it?
-	router Router
-	//
-	mux *http.ServeMux
+	router *Router
 }
 
-func (a *App) RegisterRouter(r Router) {
+func (a *App) RegisterRouter(r *Router) {
 	a.router = r
 }
 
@@ -22,8 +20,9 @@ func (a *App) RegisterRouter(r Router) {
 func (a *App) Start() {
 
 	dsn := fmt.Sprintf(":%d", a.port)
-
-	http.ListenAndServe(dsn, a.mux)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", func(res http.ResponseWriter, req *http.Request) { a.router.Handle(res, req) })
+	http.ListenAndServe(dsn, mux)
 }
 
 func NewApp(port int) *App {

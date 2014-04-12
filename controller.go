@@ -7,5 +7,5 @@ import (
 type Controller struct {
 	request *http.Request
 
-	response http.ResponseWriter
+	Response http.ResponseWriter
 }

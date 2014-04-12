@@ -1,8 +1,11 @@
 package framework
 
 import (
-	"reflect"
+	"fmt"
 	"strings"
+	"net/http"
+
+	"reflect"
 )
 
 func NewRouter() *Router {
@@ -14,10 +17,30 @@ type Router struct {
 	controllers map[string]StructInfo
 }
 
+func (r *Router) Handle(res http.ResponseWriter, req *http.Request) {
+
+	URI := req.URL.Path
+
+	controller, action := r.getControllerAndAction(URI)
+
+	if !r.hasRoute(controller, action) {
+		// todo handle 404 nicely
+		fmt.Fprintf(res, "No such controller")
+		return
+	}
+
+	controllerInfo := r.controllers[controller]
+	value := controllerInfo.Value.MethodByName(action).Call([]reflect.Value{})
+
+	html := value[0].String()
+
+	fmt.Fprintf(res, html)
+}
+
 func (r *Router) RegisterController(c interface{}) {
-	reflected := reflect.TypeOf(c)
-	structInfo := getStructInfo(reflected)
-	r.controllers[reflected.Name()] = structInfo
+
+	structInfo := getStructInfo(c)
+	r.controllers[structInfo.Name] = structInfo
 }
 
 func (a *Router) getControllerAndAction(URI string) (string, string) {
@@ -39,9 +62,16 @@ func (a *Router) getControllerAndAction(URI string) (string, string) {
 	return defaultController, defaultAction
 }
 
-func (a *Router) hasController(controller string) bool {
+func (a *Router) hasRoute(controller string, action string) bool {
 
-	_, ok := a.controllers[controller]
+
+	controllerInfo, ok := a.controllers[controller]
+
+	if ok == false {
+		return false
+	}
+
+	_, ok = controllerInfo.Methods[action]
 
 	return ok
 }
