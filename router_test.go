@@ -30,7 +30,7 @@ func TestRouter_RegisterController(t *testing.T) {
 
 func TestRouter_getControllerAndAction_TwoPartsGiven(t *testing.T) {
 	router := NewRouter()
-	controller, action, params := router.getControllerAndAction("/home/index")
+	controller, action, params := router.getControllerAndActionAndParams("/home/index")
 	expectedController, expectedAction := "Home", "Index"
 
 	if controller != expectedController {
@@ -49,11 +49,10 @@ func TestRouter_getControllerAndAction_TwoPartsGiven(t *testing.T) {
 	}
 }
 
-
 func TestRouter_getControllerAndAction_TwoPartsGivenWithParams(t *testing.T) {
 	router := NewRouter()
-	controller, action, params := router.getControllerAndAction("/home/index/one/two")
-	expectedController, expectedAction := "Home", "Index"
+	controller, action, params := router.getControllerAndActionAndParams("/alpha/index/one/two")
+	expectedController, expectedAction := "Alpha", "Index"
 
 	if controller != expectedController {
 		t.Errorf("Expected %v got %v", expectedController, controller)
@@ -64,9 +63,9 @@ func TestRouter_getControllerAndAction_TwoPartsGivenWithParams(t *testing.T) {
 		t.Errorf("Expected %v got %v", expectedAction, action)
 		return
 	}
-
-	if len(params) != 2 {
-		t.Errorf("Expected empty params but got something back")
+	theCount := len(params)
+	if theCount != 2 {
+		t.Errorf("Expected empty params but got something back %v %v", theCount, params)
 		return
 	}
 
@@ -85,7 +84,7 @@ func TestRouter_getControllerAndAction_TwoPartsGivenWithParams(t *testing.T) {
 
 func TestRouter_getControllerAndAction_OnePartsGiven(t *testing.T) {
 	router := NewRouter()
-	controller, action, params := router.getControllerAndAction("/home")
+	controller, action, params := router.getControllerAndActionAndParams("/home")
 	expectedController, expectedAction := "Home", "Index"
 
 	if controller != expectedController {
@@ -104,7 +103,7 @@ func TestRouter_getControllerAndAction_OnePartsGiven(t *testing.T) {
 func TestRouter_getControllerAndAction_ZeroPartsGiven(t *testing.T) {
 
 	router := NewRouter()
-	controller, action, params := router.getControllerAndAction("/")
+	controller, action, params := router.getControllerAndActionAndParams("/")
 	expectedController, expectedAction := "Home", "Index"
 
 	if controller != expectedController {

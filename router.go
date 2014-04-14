@@ -43,7 +43,7 @@ func (r *Router) RegisterController(c interface{}) {
 	r.controllers[structInfo.Name] = structInfo
 }
 
-func (a *Router) getControllerAndAction(URI string) (string, string, []string) {
+func (a *Router) getControllerAndActionAndParams(URI string) (string, string, []string) {
 
 	defaultController := "Home"
 	defaultAction := "Index"
@@ -55,7 +55,7 @@ func (a *Router) getControllerAndAction(URI string) (string, string, []string) {
 	partsLen := len(parts)
 
 	if partsLen >= 2 {
-		params = parts[1:]
+		params = parts[2:]
 		return UpperFirst(parts[0]), UpperFirst(parts[1]), params
 	} else if partsLen == 1 && parts[0] != "" {
 		return UpperFirst(parts[0]), defaultAction, params
