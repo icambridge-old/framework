@@ -17,11 +17,11 @@ type Router struct {
 	controllers map[string]StructInfo
 }
 
-func (r *Router) Handle(res http.ResponseWriter, req *http.Request) {
+func (r *Router) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 
 	URI := req.URL.Path
 
-	controller, action := r.getControllerAndAction(URI)
+	controller, action, _ := r.getControllerAndActionAndParams(URI)
 
 	if !r.hasRoute(controller, action) {
 		// todo handle 404 nicely
@@ -33,8 +33,8 @@ func (r *Router) Handle(res http.ResponseWriter, req *http.Request) {
 	value := controllerInfo.Value.MethodByName(action).Call([]reflect.Value{})
 
 	html := value[0].String()
-
-	fmt.Fprintf(res, html)
+	res.Header().Set("Content-Type", "text/html; charset=utf-8")
+	fmt.Fprint(res, html)
 }
 
 func (r *Router) RegisterController(c interface{}) {
@@ -43,10 +43,11 @@ func (r *Router) RegisterController(c interface{}) {
 	r.controllers[structInfo.Name] = structInfo
 }
 
-func (a *Router) getControllerAndAction(URI string) (string, string) {
+func (a *Router) getControllerAndAction(URI string) (string, string, []string) {
 
 	defaultController := "Home"
 	defaultAction := "Index"
+	params := []string{}
 
 	URI = strings.Trim(URI, "/")
 	parts := strings.Split(URI, "/")
@@ -54,12 +55,13 @@ func (a *Router) getControllerAndAction(URI string) (string, string) {
 	partsLen := len(parts)
 
 	if partsLen >= 2 {
-		return UpperFirst(parts[0]), UpperFirst(parts[1])
+		params = parts[1:]
+		return UpperFirst(parts[0]), UpperFirst(parts[1]), params
 	} else if partsLen == 1 && parts[0] != "" {
-		return UpperFirst(parts[0]), defaultAction
+		return UpperFirst(parts[0]), defaultAction, params
 	}
 
-	return defaultController, defaultAction
+	return defaultController, defaultAction, params
 }
 
 func (a *Router) hasRoute(controller string, action string) bool {

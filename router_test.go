@@ -30,21 +30,62 @@ func TestRouter_RegisterController(t *testing.T) {
 
 func TestRouter_getControllerAndAction_TwoPartsGiven(t *testing.T) {
 	router := NewRouter()
-	controller, action := router.getControllerAndAction("/home/index")
+	controller, action, params := router.getControllerAndAction("/home/index")
 	expectedController, expectedAction := "Home", "Index"
 
 	if controller != expectedController {
 		t.Errorf("Expected %v got %v", expectedController, controller)
+		return
 	}
 
 	if action != expectedAction {
 		t.Errorf("Expected %v got %v", expectedAction, action)
+		return
+	}
+
+	if len(params) != 0 {
+		t.Errorf("Expected empty params but got something back")
+		return
+	}
+}
+
+
+func TestRouter_getControllerAndAction_TwoPartsGivenWithParams(t *testing.T) {
+	router := NewRouter()
+	controller, action, params := router.getControllerAndAction("/home/index/one/two")
+	expectedController, expectedAction := "Home", "Index"
+
+	if controller != expectedController {
+		t.Errorf("Expected %v got %v", expectedController, controller)
+		return
+	}
+
+	if action != expectedAction {
+		t.Errorf("Expected %v got %v", expectedAction, action)
+		return
+	}
+
+	if len(params) != 2 {
+		t.Errorf("Expected empty params but got something back")
+		return
+	}
+
+	if params[0] != "one" {
+
+		t.Errorf("Expected one but got %v", params[0])
+		return
+	}
+
+	if params[1] != "two" {
+
+		t.Errorf("Expected two but got %v", params[1])
+		return
 	}
 }
 
 func TestRouter_getControllerAndAction_OnePartsGiven(t *testing.T) {
 	router := NewRouter()
-	controller, action := router.getControllerAndAction("/home")
+	controller, action, params := router.getControllerAndAction("/home")
 	expectedController, expectedAction := "Home", "Index"
 
 	if controller != expectedController {
@@ -53,13 +94,17 @@ func TestRouter_getControllerAndAction_OnePartsGiven(t *testing.T) {
 
 	if action != expectedAction {
 		t.Errorf("Expected %v got %v", expectedAction, action)
+	}
+
+	if len(params) != 0 {
+		t.Errorf("Expected empty params but got something back")
 	}
 }
 
 func TestRouter_getControllerAndAction_ZeroPartsGiven(t *testing.T) {
 
 	router := NewRouter()
-	controller, action := router.getControllerAndAction("/")
+	controller, action, params := router.getControllerAndAction("/")
 	expectedController, expectedAction := "Home", "Index"
 
 	if controller != expectedController {
@@ -68,6 +113,10 @@ func TestRouter_getControllerAndAction_ZeroPartsGiven(t *testing.T) {
 
 	if action != expectedAction {
 		t.Errorf("Expected %v got %v", expectedAction, action)
+	}
+
+	if len(params) != 0 {
+		t.Errorf("Expected empty params but got something back")
 	}
 }
 

@@ -21,7 +21,10 @@ func (a *App) Start() {
 
 	dsn := fmt.Sprintf(":%d", a.port)
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", func(res http.ResponseWriter, req *http.Request) { a.router.Handle(res, req) })
+	mux.Handle("/js/", http.FileServer(http.Dir("./static/")))
+	mux.Handle("/css/", http.FileServer(http.Dir("./static/")))
+	mux.Handle("/font/", http.FileServer(http.Dir("./static/")))
+	mux.Handle("/", a.router)
 	http.ListenAndServe(dsn, mux)
 }
 
