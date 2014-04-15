@@ -11,7 +11,7 @@ func Test_getMethods_OneMethod(t *testing.T) {
 
 	methods := getMethods(testType)
 
-	expectedLen, actualLen := 1, len(methods)
+	expectedLen, actualLen := 2, len(methods)
 
 	if expectedLen != actualLen {
 		t.Errorf("Expected a count of %v but got %v", expectedLen, actualLen)
@@ -33,7 +33,7 @@ func Test_getMethods_TwoMethods(t *testing.T) {
 
 	methods := getMethods(testType)
 
-	expectedLen, actualLen := 2, len(methods)
+	expectedLen, actualLen := 3, len(methods)
 
 	if expectedLen != actualLen {
 		t.Errorf("Expected a count of %v but got %v", expectedLen, actualLen)
