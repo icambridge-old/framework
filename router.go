@@ -18,23 +18,45 @@ type Router struct {
 }
 
 func (r *Router) ServeHTTP(res http.ResponseWriter, req *http.Request) {
-
+	// TODO test!
 	URI := req.URL.Path
 
-	controller, action, _ := r.getControllerAndActionAndParams(URI)
+	controller, action, params := r.getControllerAndActionAndParams(URI)
 
 	if !r.hasRoute(controller, action) {
 		// todo handle 404 nicely
-		fmt.Fprintf(res, "No such controller")
+		r.fourOhFour(res)
 		return
 	}
 
+	paramsValues := []reflect.Value{}
+
+	for _, param := range params {
+		paramsValues = append(paramsValues, reflect.ValueOf(param))
+	}
+
 	controllerInfo := r.controllers[controller]
-	value := controllerInfo.Value.MethodByName(action).Call([]reflect.Value{})
+	var methodType reflect.Method
+	methodValue := controllerInfo.Value.MethodByName(action)
+	methodType, _  = controllerInfo.Type.MethodByName(action)
+
+	numIn := methodType.Type.NumIn() - 1
+
+	if numIn != len(paramsValues) {
+		r.fourOhFour(res)
+		return
+	}
+
+	value := methodValue.Call(paramsValues)
 
 	html := value[0].String()
 	res.Header().Set("Content-Type", "text/html; charset=utf-8")
 	fmt.Fprint(res, html)
+}
+
+func (r *Router) fourOhFour(res http.ResponseWriter) {
+	// TODO improve.
+	fmt.Fprintf(res, "No such controller")
 }
 
 func (r *Router) RegisterController(c interface{}) {
