@@ -1,7 +1,8 @@
 framework
 =========
 
-A simple web framework in Golang. A major work in progress. I have no idea what I want or what I'll end up with.
+A defunk project. [Why?](http://www.iain.sexy/blog/2014/04/19/why-revel/)
+
 
 ### If you're wanting to use a web framework in go
 
